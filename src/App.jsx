@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 
 function HalamanLogin({ onLogin }) {
   const [rekening, setRekening] = useState('')
@@ -7,15 +7,8 @@ function HalamanLogin({ onLogin }) {
   const [loading, setLoading] = useState(false)
 
   function login() {
-    if (!rekening || !pin) {
-      setPesan('Isi semua kolom dulu!')
-      return
-    }
-    if (pin.length < 6) {
-      setPesan('PIN minimal 6 angka!')
-      return
-    }
-
+    if (!rekening || !pin) { setPesan('Isi semua kolom dulu!'); return }
+    if (pin.length < 6) { setPesan('PIN minimal 6 angka!'); return }
     setLoading(true)
     setTimeout(() => {
       if (rekening === '1234567890' && pin === '123456') {
@@ -28,375 +21,172 @@ function HalamanLogin({ onLogin }) {
   }
 
   return (
-    <div style={{
-      fontFamily: 'sans-serif',
-      background: '#f5f7fa',
-      minHeight: '100vh',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      padding: '20px'
-    }}>
-      <div style={{
-        background: 'white',
-        borderRadius: '16px',
-        padding: '32px',
-        width: '100%',
-        maxWidth: '360px',
-        border: '1px solid #eee'
-      }}>
-
-        <div style={{ textAlign: 'center', marginBottom: '24px' }}>
-          <div style={{
-            width: '56px',
-            height: '56px',
-            background: '#1a56db',
-            borderRadius: '16px',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            margin: '0 auto 12px',
-            fontSize: '24px'
-          }}>
-            🏦
-          </div>
-          <h2 style={{ margin: '0 0 4px' }}>Bank Ku</h2>
-          <p style={{ margin: 0, fontSize: '14px', color: '#888' }}>
-            Masuk ke akun kamu
-          </p>
+    <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
+      <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-8 w-full max-w-sm">
+        <div className="text-center mb-8">
+          <div className="w-14 h-14 bg-blue-600 rounded-2xl flex items-center justify-center mx-auto mb-3 text-2xl">🏦</div>
+          <h2 className="text-xl font-semibold text-gray-800">Bank Ku</h2>
+          <p className="text-sm text-gray-400 mt-1">Masuk ke akun kamu</p>
         </div>
-
-        <label style={{ fontSize: '13px', color: '#555' }}>
-          Nomor rekening
-        </label>
-        <input
-          type="text"
-          placeholder="Contoh: 1234567890"
-          value={rekening}
-          onChange={(e) => setRekening(e.target.value)}
-          style={{
-            width: '100%',
-            padding: '10px 12px',
-            borderRadius: '8px',
-            border: '1px solid #ddd',
-            fontSize: '14px',
-            marginTop: '6px',
-            marginBottom: '16px',
-            boxSizing: 'border-box'
-          }}
-        />
-
-        <label style={{ fontSize: '13px', color: '#555' }}>
-          PIN
-        </label>
-        <input
-          type="password"
-          placeholder="Masukkan 6 digit PIN"
-          value={pin}
-          onChange={(e) => setPin(e.target.value)}
-          onKeyDown={(e) => e.key === 'Enter' && login()}
-          style={{
-            width: '100%',
-            padding: '10px 12px',
-            borderRadius: '8px',
-            border: '1px solid #ddd',
-            fontSize: '14px',
-            marginTop: '6px',
-            marginBottom: '16px',
-            boxSizing: 'border-box'
-          }}
-        />
-
-        {pesan !== '' && (
-          <div style={{
-            padding: '10px 12px',
-            borderRadius: '8px',
-            background: '#ffebee',
-            color: '#c62828',
-            fontSize: '13px',
-            marginBottom: '16px'
-          }}>
-            {pesan}
-          </div>
-        )}
-
-        <button
-          onClick={login}
-          disabled={loading}
-          style={{
-            width: '100%',
-            padding: '12px',
-            background: loading ? '#93c5fd' : '#1a56db',
-            color: 'white',
-            border: 'none',
-            borderRadius: '8px',
-            fontSize: '15px',
-            cursor: loading ? 'not-allowed' : 'pointer'
-          }}
-        >
+        <div className="mb-4">
+          <label className="text-sm text-gray-500 mb-1 block">Nomor rekening</label>
+          <input type="text" placeholder="Contoh: 1234567890" value={rekening} onChange={(e) => setRekening(e.target.value)} className="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+        </div>
+        <div className="mb-4">
+          <label className="text-sm text-gray-500 mb-1 block">PIN</label>
+          <input type="password" placeholder="Masukkan 6 digit PIN" value={pin} onChange={(e) => setPin(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && login()} className="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+        </div>
+        {pesan && <div className="bg-red-50 text-red-600 text-sm rounded-lg px-3 py-2.5 mb-4">{pesan}</div>}
+        <button onClick={login} disabled={loading} className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2.5 rounded-lg text-sm transition-colors disabled:bg-blue-300">
           {loading ? 'Memverifikasi...' : 'Masuk'}
         </button>
-
-        <p style={{
-          textAlign: 'center',
-          fontSize: '12px',
-          color: '#aaa',
-          marginTop: '16px',
-          marginBottom: 0
-        }}>
-          Rekening: 1234567890 · PIN: 123456
-        </p>
-
+        <p className="text-center text-xs text-gray-300 mt-4">Rekening: 1234567890 · PIN: 123456</p>
       </div>
     </div>
   )
 }
 
-function HalamanUtama({ namaUser, onLogout, saldo, setSaldo, riwayat, setRiwayat }) {
+function HalamanUtama({ namaUser, onLogout }) {
   const [halaman, setHalaman] = useState('beranda')
   const [nominal, setNominal] = useState('')
   const [rekening, setRekening] = useState('')
   const [pesan, setPesan] = useState('')
+  const [saldo, setSaldo] = useState(0)
+  const [riwayat, setRiwayat] = useState([])
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    setLoading(true)
+    setTimeout(() => {
+      setSaldo(12500000)
+      setRiwayat([
+        { id: 1, nama: 'Gaji masuk', jumlah: 8000000, masuk: true, tanggal: '1 Mei 2026' },
+        { id: 2, nama: 'Indomaret', jumlah: 87000, masuk: false, tanggal: '3 Mei 2026' },
+        { id: 3, nama: 'Transfer masuk - Ayah', jumlah: 500000, masuk: true, tanggal: '5 Mei 2026' },
+      ])
+      setLoading(false)
+    }, 1500)
+  }, [])
 
   function transfer() {
     const jumlah = Number(nominal)
     if (!rekening) { setPesan('Isi nomor rekening tujuan!'); return }
     if (!jumlah || jumlah <= 0) { setPesan('Isi nominal dulu!'); return }
     if (jumlah > saldo) { setPesan('Saldo tidak cukup!'); return }
-
     setSaldo(saldo - jumlah)
     setPesan('Transfer Rp ' + jumlah.toLocaleString('id-ID') + ' berhasil!')
-    setRiwayat([{
-      id: riwayat.length + 1,
-      nama: 'Transfer ke ' + rekening,
-      jumlah,
-      masuk: false,
-      tanggal: 'Hari ini'
-    }, ...riwayat])
+    setRiwayat([{ id: riwayat.length + 1, nama: 'Transfer ke ' + rekening, jumlah, masuk: false, tanggal: 'Hari ini' }, ...riwayat])
     setNominal('')
     setRekening('')
   }
 
-  const tombolNav = (nama, label) => (
-    <button
-      onClick={() => { setHalaman(nama); setPesan('') }}
-      style={{
-        padding: '8px 14px',
-        borderRadius: '8px',
-        border: 'none',
-        background: halaman === nama ? '#1a56db' : '#eee',
-        color: halaman === nama ? 'white' : '#333',
-        cursor: 'pointer',
-        fontSize: '13px'
-      }}
-    >
+  const navBtn = (nama, label) => (
+    <button onClick={() => { setHalaman(nama); setPesan('') }}
+      className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${halaman === nama ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-500 hover:bg-gray-200'}`}>
       {label}
     </button>
   )
 
   return (
-    <div style={{
-      fontFamily: 'sans-serif',
-      background: '#f5f7fa',
-      minHeight: '100vh',
-      padding: '20px',
-      maxWidth: '400px',
-      margin: '0 auto'
-    }}>
-
-      <div style={{
-        display: 'flex',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        marginBottom: '16px'
-      }}>
-        <h2 style={{ margin: 0 }}>Bank Ku</h2>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-          <span style={{ fontSize: '13px', color: '#888' }}>
-            Halo, {namaUser}
-          </span>
-          <button
-            onClick={onLogout}
-            style={{
-              padding: '6px 12px',
-              borderRadius: '8px',
-              border: '1px solid #ddd',
-              background: 'white',
-              color: '#666',
-              cursor: 'pointer',
-              fontSize: '12px'
-            }}
-          >
-            Keluar
-          </button>
-        </div>
-      </div>
-
-      <div style={{ display: 'flex', gap: '8px', marginBottom: '20px' }}>
-        {tombolNav('beranda', 'Beranda')}
-        {tombolNav('transfer', 'Transfer')}
-        {tombolNav('riwayat', 'Riwayat')}
-      </div>
-
-      {halaman === 'beranda' && (
-        <div>
-          <div style={{
-            background: '#1a56db',
-            borderRadius: '16px',
-            padding: '24px',
-            marginBottom: '16px',
-            color: 'white'
-          }}>
-            <p style={{ margin: '0 0 4px', fontSize: '13px', opacity: 0.8 }}>
-              Saldo rekening
-            </p>
-            <h2 style={{ margin: '0 0 4px', fontSize: '28px' }}>
-              Rp {saldo.toLocaleString('id-ID')}
-            </h2>
-            <p style={{ margin: 0, fontSize: '12px', opacity: 0.7 }}>
-              **** **** **** 4821
-            </p>
+    <div className="min-h-screen bg-gray-50 p-4">
+      <div className="max-w-sm mx-auto">
+        <div className="flex justify-between items-center mb-5">
+          <h2 className="text-lg font-semibold">Bank Ku</h2>
+          <div className="flex items-center gap-2">
+            <span className="text-sm text-gray-400">Halo, {namaUser}</span>
+            <button onClick={onLogout} className="text-xs text-gray-400 border border-gray-200 px-3 py-1.5 rounded-lg hover:bg-gray-100">Keluar</button>
           </div>
+        </div>
 
-          <h4 style={{ margin: '0 0 10px', color: '#555' }}>Transaksi terakhir</h4>
-          <div style={{
-            background: 'white',
-            borderRadius: '12px',
-            padding: '0 16px',
-            border: '1px solid #eee'
-          }}>
-            {riwayat.slice(0, 3).map((tx) => (
-              <div key={tx.id} style={{
-                display: 'flex',
-                justifyContent: 'space-between',
-                alignItems: 'center',
-                padding: '12px 0',
-                borderBottom: '1px solid #f5f5f5',
-                fontSize: '14px'
-              }}>
-                <div>
-                  <div style={{ fontWeight: '500' }}>{tx.nama}</div>
-                  <div style={{ fontSize: '12px', color: '#aaa' }}>{tx.tanggal}</div>
+        <div className="flex gap-2 mb-5">
+          {navBtn('beranda', 'Beranda')}
+          {navBtn('transfer', 'Transfer')}
+          {navBtn('riwayat', 'Riwayat')}
+        </div>
+
+        {halaman === 'beranda' && (
+          <div>
+            {loading ? (
+              <div className="bg-white rounded-2xl border border-gray-100 p-6 mb-4">
+                <p className="text-xs text-gray-400 mb-2">Memuat data saldo...</p>
+                <div className="h-8 bg-gray-100 rounded animate-pulse mb-1 w-48"></div>
+                <div className="h-3 bg-gray-100 rounded animate-pulse w-32"></div>
+              </div>
+            ) : (
+              <div className="bg-blue-600 rounded-2xl p-6 mb-4 text-white">
+                <p className="text-xs text-blue-200 mb-1">Saldo rekening</p>
+                <h2 className="text-3xl font-semibold mb-1">Rp {saldo.toLocaleString('id-ID')}</h2>
+                <p className="text-xs text-blue-300">**** **** **** 4821</p>
+              </div>
+            )}
+
+            <h4 className="text-sm font-medium text-gray-400 mb-2">Transaksi terakhir</h4>
+            <div className="bg-white rounded-xl border border-gray-100 divide-y divide-gray-50">
+              {loading ? (
+                [1,2,3].map(i => (
+                  <div key={i} className="flex justify-between items-center px-4 py-3">
+                    <div className="h-4 bg-gray-100 rounded animate-pulse w-32"></div>
+                    <div className="h-4 bg-gray-100 rounded animate-pulse w-20"></div>
+                  </div>
+                ))
+              ) : (
+                riwayat.slice(0, 3).map((tx) => (
+                  <div key={tx.id} className="flex justify-between items-center px-4 py-3">
+                    <div>
+                      <div className="text-sm font-medium text-gray-700">{tx.nama}</div>
+                      <div className="text-xs text-gray-300">{tx.tanggal}</div>
+                    </div>
+                    <span className={`text-sm font-semibold ${tx.masuk ? 'text-green-500' : 'text-red-400'}`}>
+                      {tx.masuk ? '+' : '-'}Rp {tx.jumlah.toLocaleString('id-ID')}
+                    </span>
+                  </div>
+                ))
+              )}
+            </div>
+            <button onClick={() => setHalaman('riwayat')} className="w-full mt-3 py-2.5 bg-white border border-gray-100 rounded-xl text-sm text-blue-600 hover:bg-gray-50">
+              Lihat semua riwayat →
+            </button>
+          </div>
+        )}
+
+        {halaman === 'transfer' && (
+          <div className="bg-white rounded-xl border border-gray-100 p-5">
+            <p className="text-xs text-gray-400 mb-1">Saldo tersedia</p>
+            <h3 className="text-xl font-semibold text-blue-600 mb-5">Rp {saldo.toLocaleString('id-ID')}</h3>
+            <label className="text-sm text-gray-500 block mb-1">Nomor rekening tujuan</label>
+            <input type="text" placeholder="Contoh: 1234567890" value={rekening} onChange={(e) => setRekening(e.target.value)} className="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm mb-4 focus:outline-none focus:ring-2 focus:ring-blue-500" />
+            <label className="text-sm text-gray-500 block mb-1">Nominal transfer</label>
+            <input type="number" placeholder="Contoh: 500000" value={nominal} onChange={(e) => setNominal(e.target.value)} className="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm mb-4 focus:outline-none focus:ring-2 focus:ring-blue-500" />
+            {pesan && (
+              <div className={`text-sm rounded-lg px-3 py-2.5 mb-4 ${pesan.includes('berhasil') ? 'bg-green-50 text-green-600' : 'bg-red-50 text-red-500'}`}>{pesan}</div>
+            )}
+            <button onClick={transfer} className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2.5 rounded-lg text-sm transition-colors">Kirim Transfer</button>
+          </div>
+        )}
+
+        {halaman === 'riwayat' && (
+          <div className="bg-white rounded-xl border border-gray-100 divide-y divide-gray-50">
+            <div className="px-4 py-3 text-sm font-medium text-gray-400">Semua transaksi ({riwayat.length})</div>
+            {riwayat.map((tx) => (
+              <div key={tx.id} className="flex justify-between items-center px-4 py-3">
+                <div className="flex items-center gap-3">
+                  <div className={`w-9 h-9 rounded-full flex items-center justify-center text-base ${tx.masuk ? 'bg-green-50 text-green-500' : 'bg-red-50 text-red-400'}`}>
+                    {tx.masuk ? '↓' : '↑'}
+                  </div>
+                  <div>
+                    <div className="text-sm font-medium text-gray-700">{tx.nama}</div>
+                    <div className="text-xs text-gray-300">{tx.tanggal}</div>
+                  </div>
                 </div>
-                <span style={{ color: tx.masuk ? 'green' : 'red', fontWeight: '500' }}>
+                <span className={`text-sm font-semibold ${tx.masuk ? 'text-green-500' : 'text-red-400'}`}>
                   {tx.masuk ? '+' : '-'}Rp {tx.jumlah.toLocaleString('id-ID')}
                 </span>
               </div>
             ))}
           </div>
-          <button
-            onClick={() => setHalaman('riwayat')}
-            style={{
-              width: '100%', marginTop: '12px', padding: '10px',
-              background: 'white', border: '1px solid #ddd',
-              borderRadius: '8px', color: '#1a56db',
-              cursor: 'pointer', fontSize: '14px'
-            }}
-          >
-            Lihat semua riwayat →
-          </button>
-        </div>
-      )}
+        )}
 
-      {halaman === 'transfer' && (
-        <div style={{
-          background: 'white', borderRadius: '12px',
-          padding: '20px', border: '1px solid #eee'
-        }}>
-          <p style={{ margin: '0 0 4px', fontSize: '13px', color: '#888' }}>Saldo tersedia</p>
-          <h3 style={{ margin: '0 0 20px', color: '#1a56db' }}>
-            Rp {saldo.toLocaleString('id-ID')}
-          </h3>
-
-          <label style={{ fontSize: '13px', color: '#555' }}>Nomor rekening tujuan</label>
-          <input
-            type="text"
-            placeholder="Contoh: 1234567890"
-            value={rekening}
-            onChange={(e) => setRekening(e.target.value)}
-            style={{
-              width: '100%', padding: '10px', borderRadius: '8px',
-              border: '1px solid #ddd', fontSize: '14px',
-              marginTop: '6px', marginBottom: '14px', boxSizing: 'border-box'
-            }}
-          />
-
-          <label style={{ fontSize: '13px', color: '#555' }}>Nominal transfer</label>
-          <input
-            type="number"
-            placeholder="Contoh: 500000"
-            value={nominal}
-            onChange={(e) => setNominal(e.target.value)}
-            style={{
-              width: '100%', padding: '10px', borderRadius: '8px',
-              border: '1px solid #ddd', fontSize: '14px',
-              marginTop: '6px', marginBottom: '14px', boxSizing: 'border-box'
-            }}
-          />
-
-          {pesan !== '' && (
-            <p style={{
-              padding: '10px', borderRadius: '8px',
-              background: pesan.includes('berhasil') ? '#e8f5e9' : '#ffebee',
-              color: pesan.includes('berhasil') ? 'green' : 'red',
-              fontSize: '13px', marginBottom: '14px'
-            }}>
-              {pesan}
-            </p>
-          )}
-
-          <button
-            onClick={transfer}
-            style={{
-              width: '100%', padding: '12px', background: '#1a56db',
-              color: 'white', border: 'none', borderRadius: '8px',
-              fontSize: '15px', cursor: 'pointer'
-            }}
-          >
-            Kirim Transfer
-          </button>
-        </div>
-      )}
-
-      {halaman === 'riwayat' && (
-        <div style={{
-          background: 'white', borderRadius: '12px',
-          padding: '0 16px', border: '1px solid #eee'
-        }}>
-          <div style={{
-            padding: '14px 0', borderBottom: '1px solid #f0f0f0',
-            fontSize: '14px', fontWeight: '500', color: '#555'
-          }}>
-            Semua transaksi ({riwayat.length})
-          </div>
-          {riwayat.map((tx) => (
-            <div key={tx.id} style={{
-              display: 'flex', justifyContent: 'space-between',
-              alignItems: 'center', padding: '12px 0',
-              borderBottom: '1px solid #f5f5f5', fontSize: '14px'
-            }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                <div style={{
-                  width: '36px', height: '36px', borderRadius: '50%',
-                  background: tx.masuk ? '#e8f5e9' : '#ffebee',
-                  display: 'flex', alignItems: 'center',
-                  justifyContent: 'center', fontSize: '16px'
-                }}>
-                  {tx.masuk ? '↓' : '↑'}
-                </div>
-                <div>
-                  <div style={{ fontWeight: '500' }}>{tx.nama}</div>
-                  <div style={{ fontSize: '12px', color: '#aaa' }}>{tx.tanggal}</div>
-                </div>
-              </div>
-              <span style={{ color: tx.masuk ? 'green' : 'red', fontWeight: '500' }}>
-                {tx.masuk ? '+' : '-'}Rp {tx.jumlah.toLocaleString('id-ID')}
-              </span>
-            </div>
-          ))}
-        </div>
-      )}
-
+      </div>
     </div>
   )
 }
@@ -404,35 +194,15 @@ function HalamanUtama({ namaUser, onLogout, saldo, setSaldo, riwayat, setRiwayat
 function App() {
   const [sudahLogin, setSudahLogin] = useState(false)
   const [namaUser, setNamaUser] = useState('')
-  const [saldo, setSaldo] = useState(12500000)
-  const [riwayat, setRiwayat] = useState([
-    { id: 1, nama: 'Gaji masuk', jumlah: 8000000, masuk: true, tanggal: '1 Mei 2026' },
-    { id: 2, nama: 'Indomaret', jumlah: 87000, masuk: false, tanggal: '3 Mei 2026' },
-    { id: 3, nama: 'Transfer masuk - Ayah', jumlah: 500000, masuk: true, tanggal: '5 Mei 2026' },
-  ])
-
-  function handleLogin(rek) {
-    setNamaUser(rek)
-    setSudahLogin(true)
-  }
-
-  function handleLogout() {
-    setSudahLogin(false)
-    setNamaUser('')
-  }
 
   if (!sudahLogin) {
-    return <HalamanLogin onLogin={handleLogin} />
+    return <HalamanLogin onLogin={(rek) => { setNamaUser(rek); setSudahLogin(true) }} />
   }
 
   return (
     <HalamanUtama
       namaUser={namaUser}
-      onLogout={handleLogout}
-      saldo={saldo}
-      setSaldo={setSaldo}
-      riwayat={riwayat}
-      setRiwayat={setRiwayat}
+      onLogout={() => { setSudahLogin(false); setNamaUser('') }}
     />
   )
 }
