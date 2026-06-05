@@ -55,6 +55,24 @@ function HalamanUtama({ namaUser, onLogout }) {
   const [riwayat, setRiwayat] = useState([])
   const [loading, setLoading] = useState(true)
 
+  // Data profil pengguna
+  const [profil, setProfil] = useState({
+    nama: 'Andre Wijaya',
+    email: 'andre@gmail.com',
+    telepon: '081234567890',
+    alamat: 'Jl. Mawar No. 10, Yogyakarta'
+  })
+  const [editProfil, setEditProfil] = useState(false)
+  const [profilTemp, setProfilTemp] = useState(profil)
+
+  // Data tagihan
+  const [tagihan, setTagihan] = useState([
+    { id: 1, nama: 'PLN Listrik', kode: '5217840192', nominal: 150000, kategori: '⚡', status: 'belum' },
+    { id: 2, nama: 'PDAM Air', kode: '93810284', nominal: 85000, kategori: '💧', status: 'belum' },
+    { id: 3, nama: 'Indihome Internet', kode: '0274123456', nominal: 350000, kategori: '🌐', status: 'lunas' },
+  ])
+  const [pesanTagihan, setPesanTagihan] = useState('')
+
   useEffect(() => {
     setLoading(true)
     setTimeout(() => {
@@ -80,9 +98,23 @@ function HalamanUtama({ namaUser, onLogout }) {
     setRekening('')
   }
 
+  function bayarTagihan(t) {
+    if (t.status === 'lunas') return
+    if (saldo < t.nominal) { setPesanTagihan('Saldo tidak cukup untuk bayar ' + t.nama + '!'); return }
+    setSaldo(saldo - t.nominal)
+    setTagihan(tagihan.map(x => x.id === t.id ? { ...x, status: 'lunas' } : x))
+    setRiwayat([{ id: riwayat.length + 1, nama: 'Bayar ' + t.nama, jumlah: t.nominal, masuk: false, tanggal: 'Hari ini' }, ...riwayat])
+    setPesanTagihan('Tagihan ' + t.nama + ' berhasil dibayar!')
+  }
+
+  function simpanProfil() {
+    setProfil(profilTemp)
+    setEditProfil(false)
+  }
+
   const navBtn = (nama, label) => (
-    <button onClick={() => { setHalaman(nama); setPesan('') }}
-      className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${halaman === nama ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-500 hover:bg-gray-200'}`}>
+    <button onClick={() => { setHalaman(nama); setPesan(''); setPesanTagihan('') }}
+      className={`px-3 py-2 rounded-lg text-xs font-medium transition-colors ${halaman === nama ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-500 hover:bg-gray-200'}`}>
       {label}
     </button>
   )
@@ -90,6 +122,7 @@ function HalamanUtama({ namaUser, onLogout }) {
   return (
     <div className="min-h-screen bg-gray-50 p-4">
       <div className="max-w-sm mx-auto">
+
         <div className="flex justify-between items-center mb-5">
           <h2 className="text-lg font-semibold">Bank Ku</h2>
           <div className="flex items-center gap-2">
@@ -98,10 +131,12 @@ function HalamanUtama({ namaUser, onLogout }) {
           </div>
         </div>
 
-        <div className="flex gap-2 mb-5">
+        <div className="flex gap-2 mb-5 flex-wrap">
           {navBtn('beranda', 'Beranda')}
           {navBtn('transfer', 'Transfer')}
           {navBtn('riwayat', 'Riwayat')}
+          {navBtn('tagihan', 'Tagihan')}
+          {navBtn('profil', 'Profil')}
         </div>
 
         {halaman === 'beranda' && (
@@ -119,6 +154,21 @@ function HalamanUtama({ namaUser, onLogout }) {
                 <p className="text-xs text-blue-300">**** **** **** 4821</p>
               </div>
             )}
+
+            <div className="grid grid-cols-4 gap-2 mb-5">
+              {[
+                { icon: '↑', label: 'Transfer', page: 'transfer' },
+                { icon: '📋', label: 'Tagihan', page: 'tagihan' },
+                { icon: '📜', label: 'Riwayat', page: 'riwayat' },
+                { icon: '👤', label: 'Profil', page: 'profil' },
+              ].map(m => (
+                <button key={m.page} onClick={() => setHalaman(m.page)}
+                  className="bg-white rounded-xl border border-gray-100 p-3 flex flex-col items-center gap-1 hover:bg-gray-50">
+                  <span className="text-xl">{m.icon}</span>
+                  <span className="text-xs text-gray-500">{m.label}</span>
+                </button>
+              ))}
+            </div>
 
             <h4 className="text-sm font-medium text-gray-400 mb-2">Transaksi terakhir</h4>
             <div className="bg-white rounded-xl border border-gray-100 divide-y divide-gray-50">
@@ -183,6 +233,102 @@ function HalamanUtama({ namaUser, onLogout }) {
                 </span>
               </div>
             ))}
+          </div>
+        )}
+
+        {halaman === 'tagihan' && (
+          <div>
+            <p className="text-xs text-gray-400 mb-1">Saldo tersedia</p>
+            <h3 className="text-xl font-semibold text-blue-600 mb-4">Rp {saldo.toLocaleString('id-ID')}</h3>
+            {pesanTagihan && (
+              <div className={`text-sm rounded-lg px-3 py-2.5 mb-4 ${pesanTagihan.includes('berhasil') ? 'bg-green-50 text-green-600' : 'bg-red-50 text-red-500'}`}>
+                {pesanTagihan}
+              </div>
+            )}
+            <div className="bg-white rounded-xl border border-gray-100 divide-y divide-gray-50">
+              {tagihan.map((t) => (
+                <div key={t.id} className="flex items-center justify-between px-4 py-4">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 bg-blue-50 rounded-full flex items-center justify-center text-xl">
+                      {t.kategori}
+                    </div>
+                    <div>
+                      <div className="text-sm font-medium text-gray-700">{t.nama}</div>
+                      <div className="text-xs text-gray-400">{t.kode}</div>
+                      <div className="text-xs font-medium text-gray-500 mt-0.5">Rp {t.nominal.toLocaleString('id-ID')}</div>
+                    </div>
+                  </div>
+                  {t.status === 'lunas' ? (
+                    <span className="text-xs font-medium text-green-500 bg-green-50 px-3 py-1 rounded-full">Lunas</span>
+                  ) : (
+                    <button onClick={() => bayarTagihan(t)}
+                      className="text-xs font-medium text-white bg-blue-600 hover:bg-blue-700 px-3 py-1.5 rounded-lg transition-colors">
+                      Bayar
+                    </button>
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {halaman === 'profil' && (
+          <div>
+            <div className="bg-white rounded-xl border border-gray-100 p-5 mb-4">
+              <div className="flex items-center gap-4 mb-5">
+                <div className="w-14 h-14 bg-blue-600 rounded-full flex items-center justify-center text-white text-xl font-semibold">
+                  {profil.nama.charAt(0)}
+                </div>
+                <div>
+                  <div className="font-semibold text-gray-800">{profil.nama}</div>
+                  <div className="text-xs text-gray-400">Nasabah Bank Ku</div>
+                  <div className="text-xs text-gray-400 mt-0.5">Rek: 1234567890</div>
+                </div>
+              </div>
+
+              {editProfil ? (
+                <div>
+                  <label className="text-xs text-gray-400 block mb-1">Nama lengkap</label>
+                  <input value={profilTemp.nama} onChange={(e) => setProfilTemp({...profilTemp, nama: e.target.value})}
+                    className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm mb-3 focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                  <label className="text-xs text-gray-400 block mb-1">Email</label>
+                  <input value={profilTemp.email} onChange={(e) => setProfilTemp({...profilTemp, email: e.target.value})}
+                    className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm mb-3 focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                  <label className="text-xs text-gray-400 block mb-1">Nomor telepon</label>
+                  <input value={profilTemp.telepon} onChange={(e) => setProfilTemp({...profilTemp, telepon: e.target.value})}
+                    className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm mb-3 focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                  <label className="text-xs text-gray-400 block mb-1">Alamat</label>
+                  <input value={profilTemp.alamat} onChange={(e) => setProfilTemp({...profilTemp, alamat: e.target.value})}
+                    className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm mb-4 focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                  <div className="flex gap-2">
+                    <button onClick={simpanProfil} className="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-lg text-sm font-medium">Simpan</button>
+                    <button onClick={() => { setEditProfil(false); setProfilTemp(profil) }} className="flex-1 border border-gray-200 text-gray-500 py-2 rounded-lg text-sm">Batal</button>
+                  </div>
+                </div>
+              ) : (
+                <div>
+                  {[
+                    { label: 'Nama lengkap', value: profil.nama },
+                    { label: 'Email', value: profil.email },
+                    { label: 'Nomor telepon', value: profil.telepon },
+                    { label: 'Alamat', value: profil.alamat },
+                  ].map((item) => (
+                    <div key={item.label} className="py-2.5 border-b border-gray-50 last:border-0">
+                      <div className="text-xs text-gray-400 mb-0.5">{item.label}</div>
+                      <div className="text-sm text-gray-700">{item.value}</div>
+                    </div>
+                  ))}
+                  <button onClick={() => { setEditProfil(true); setProfilTemp(profil) }}
+                    className="w-full mt-4 border border-gray-200 text-gray-600 py-2 rounded-lg text-sm hover:bg-gray-50">
+                    Edit profil
+                  </button>
+                </div>
+              )}
+            </div>
+
+            <button onClick={onLogout} className="w-full bg-red-50 text-red-500 py-2.5 rounded-xl text-sm font-medium hover:bg-red-100">
+              Keluar dari akun
+            </button>
           </div>
         )}
 
